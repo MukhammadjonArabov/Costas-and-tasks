@@ -1,4 +1,5 @@
 from aiogram import types
+from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from sqlalchemy import select, func
 
@@ -8,7 +9,6 @@ from aiogram.types import (
     ReplyKeyboardMarkup,
     KeyboardButton
 )
-from sqlalchemy.orm import relationship
 
 
 async def show_main_menu(message: types.Message):
@@ -32,3 +32,23 @@ async def phone_menu(message: types.Message):
        "👋 Salom! Iltimos, ro'yxatdan o'tish uchun telefon raqamingizni yuboring:",
        reply_markup=keyboard
    )
+
+async def get_expanse_keyboard():
+    return ReplyKeyboardMarkup(
+        keyboard=[
+            [KeyboardButton(text="➕ Harajat qo'shish")],
+            [KeyboardButton(text="📋 Harajatlar ro'yxati")],
+            [KeyboardButton(text="📊 Harajatlar statistika")],
+            [KeyboardButton(text="⬅️ Orqaga")]
+        ],
+        resize_keyboard=True,
+        one_time_keyboard=True
+    )
+
+async def get_back_keyboard():
+    return ReplyKeyboardMarkup(
+        keyboard=[
+            [KeyboardButton("🔙 Menyuga qaytish")]
+        ],
+        resize_keyboard=True,
+    )

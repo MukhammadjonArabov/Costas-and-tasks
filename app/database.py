@@ -12,7 +12,7 @@ load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
-    raise ValueError("DATABASE_URL .env faylda topilmadi!")
+    raise ValueError("DATABASE_URL .env not found!")
 
 Base = declarative_base()
 
@@ -27,8 +27,9 @@ async_session = sessionmaker(
     expire_on_commit=False
 )
 
+
 # ============================
-# MODELLAR
+# MODELS
 # ============================
 
 class User(Base):
@@ -40,8 +41,23 @@ class User(Base):
     user_link = Column(String, nullable=True)
     phone = Column(String, nullable=False)
 
-    projects_created = relationship("Project", back_populates="creator")
-    tasks_assigned = relationship("Task", back_populates="assigned_user")
+    projects_created = relationship(
+        "Project",
+        back_populates="creator",
+        cascade="all, delete-orphan"
+    )
+
+    tasks_assigned = relationship(
+        "Task",
+        back_populates="assigned_user",
+        foreign_keys="[Task.assigned_to]"
+    )
+
+    tasks_created = relationship(
+        "Task",
+        back_populates="creator_user",
+        foreign_keys="[Task.user_id]"
+    )
 
 
 class Expense(Base):
@@ -111,8 +127,18 @@ class Task(Base):
     assigned_to = Column(BigInteger, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
 
     project = relationship("Project", back_populates="tasks")
-    assigned_user = relationship("User", back_populates="tasks_assigned")
 
+    creator_user = relationship(
+        "User",
+        back_populates="tasks_created",
+        foreign_keys=[user_id]
+    )
+
+    assigned_user = relationship(
+        "User",
+        back_populates="tasks_assigned",
+        foreign_keys=[assigned_to]
+    )
 
 async def init_db():
     async with engine.begin() as conn:

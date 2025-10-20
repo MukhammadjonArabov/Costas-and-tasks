@@ -12,7 +12,7 @@ async def main():
     dp = Dispatcher()
 
 
-    # dp.include_router(start.router)
+    dp.include_router(start.router)
     # dp.include_router(expense.router)
     # dp.include_router(statistics.router)
 
